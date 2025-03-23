@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+if [ -d "../01 Basics" -a -d "../02 Args" ]
+then
+    echo "Those directories exist"
+else
+    echo "They do not exist"
+fi

@@ -1,0 +1,47 @@
+Name: Elia Browning
+Class: CSC 222-002
+Instructor: Josh Coriell
+Date: 2/26/2025
+
+Working functionality:
+✔️ Simple UNIX commands (including cd and history)
+✔️ I/O redirection
+✔️ Error handling
+✔️ Exit command
+
+General program workflow:
+main ⟶ LOOP [ cmdPrompt ⟶ writeHistory ⟶ parseCmdLine ⟶ executeCmd ] ⟶ exit
+
+Breakdown of each function:
+
+main:
+    The main driver that runs the entire program. Takes no arguments, returns integer.
+    Simply loops the program workflow stated above until it detects the "exit" command,
+    and breaks the loop.
+
+cmdPrompt:
+    Prints the current working directory, and prompts the user for input. Takes no arguments, returns a char array.
+    Allocates memory for user input with malloc(), then takes user input with fgets(). Since it uses fgets(), it then
+    removes the newline character from the resulting input. Finally, it returns the result.
+
+parseCmdLine:
+    Parses the user input from a char array into a ShellCommand struct. Takes char array as an argument,
+    returns ShellCommand struct. Runs user input through a tokenizer, splitting it into a two-dimensional char array
+    with space delimiters, keeping track of the number of tokens created. These tokens are entered into the struct as
+    member "argv", and the count entered as member "argc". The created struct is then returned.
+
+executeCmd:
+    Takes arguments from ShellCommand struct, checks for I/O redirection, and executes the UNIX command.
+    Takes ShellCommand struct as an argument, returns nothing. Creates two-dimensional array "args" by looping through
+    .argv of the struct. If the loop encounters a redirection token, or a file attatched to a redirection token, it does not
+    copy it into args, but stores it in a variable. The last value of args is set to NULL in order to properly interface with
+    execvp(). Before running execvp(), it checks for special commands. If "cd" is detected, it instead runs chdir().
+    If "history" is detected, it checks if the user wants to access or delete history. If accessing, it prints from
+    the history file. If deleting, it removes the history file. If no special commands are detected, then it runs normally.
+    A fork is created, and the parent process waits for the child to complete before continuing. The child process checks
+    if I/O redirection was detected, and opens the necessary files. Finally, args is inserted into execvp(), and the
+    UNIX command is processed.
+
+writeHistory:
+    Documents user input in a history file. Takes char array as an argument, returns nothing.
+    Creates history file at home directory if it does not already exist. Then appends user input to the history file.
