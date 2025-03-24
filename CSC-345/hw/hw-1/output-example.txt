@@ -1,0 +1,91 @@
+$ gcc sigHandler.c -o sigHandler ./signalTools.lib
+$ ./sigHandler
+Program started. PID: 15097
+Handler for signal 2 set up.
+Handler for signal 15 set up.
+Handler for signal 10 set up.
+Handler for signal 12 set up.
+Waiting for signals...
+^C
+Signal received: 2 (Interrupt)
+Signal 10 is now unblocked.
+SIGINT received: Unblocking SIGUSR1.
+
+Signal received: 10 (User defined signal 1)
+### STATUS REPORT ###
+Current Time: Sun Mar 23 19:21:51 2025
+
+Uptime: 1742775711 seconds
+### END OF REPORT ###
+^C
+Signal received: 2 (Interrupt)
+Signal 10 is now blocked.
+SIGINT received: Blocking SIGUSR1.
+
+Signal received: 10 (User defined signal 1)
+### STATUS REPORT ###
+Current Time: Sun Mar 23 19:22:08 2025
+
+Uptime: 1742775728 seconds
+### END OF REPORT ###
+^C
+Signal received: 2 (Interrupt)
+Signal 10 is now unblocked.
+SIGINT received: Unblocking SIGUSR1.
+
+Signal received: 10 (User defined signal 1)
+### STATUS REPORT ###
+Current Time: Sun Mar 23 19:22:21 2025
+
+Uptime: 1742775741 seconds
+### END OF REPORT ###
+
+Signal received: 12 (User defined signal 2)
+
+### Running Signal Test Cases ###
+
+Attempting test case #1...
+Signal received: 10 (User defined signal 1)
+### STATUS REPORT ###
+Current Time: Sun Mar 23 19:22:37 2025
+
+Uptime: 1742775757 seconds
+### END OF REPORT ###
+SIGUSR1 sent successfully.
+
+Attempting test case #2...
+Signal received: 2 (Interrupt)
+Signal 10 is now blocked.
+SIGINT received: Blocking SIGUSR1.
+SIGINT sent successfully.
+
+Attempting test case #3...Blocking SIGUSR1...
+Signal 10 is now blocked.
+Sending SIGUSR1...SIGUSR1 sent successfully.
+Unblocking SIGUSR1...
+Signal received: 10 (User defined signal 1)
+### STATUS REPORT ###
+Current Time: Sun Mar 23 19:22:45 2025
+
+Uptime: 1742775765 seconds
+### END OF REPORT ###
+Signal 10 is now unblocked.
+
+Sending SIGUSR1 again...
+Signal received: 10 (User defined signal 1)
+### STATUS REPORT ###
+Current Time: Sun Mar 23 19:22:46 2025
+
+Uptime: 1742775766 seconds
+### END OF REPORT ###
+SIGUSR1 sent successfully.
+
+### Signal Test Cases Completed ###
+^C
+Signal received: 2 (Interrupt)
+Signal 10 is now unblocked.
+SIGINT received: Unblocking SIGUSR1.
+
+Signal received: 15 (Terminated)
+SIGERM received: Exiting the program.
+$
