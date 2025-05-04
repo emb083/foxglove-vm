@@ -1,3 +1,7 @@
+// Name: Elia Browning
+// Date: 5/4/2025
+// Assignment: Homework 3 - Dining Philosophers Problem
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -22,6 +26,8 @@ void *philosopher(); // must be a pointer when working with threading
                      // determines first action of a philospher when thread is created
 
 int main(int argc, char *argv[]) {
+    numOfPhils = argv[1];
+    numOfTimesToEat = argv[2];
 
     // thread usage
     pthread_t threads[numOfPhils];
