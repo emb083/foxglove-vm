@@ -15,8 +15,8 @@
 #define EATING 2
 #define PERIOD 0.25
 
-int numOfPhils; // number of phils, passed in as argument[1]
-int numOfTimesToEat; // number of times to eat each, passed in as argument[2]
+int numOfPhils;
+int numOfTimesToEat;
 sem_t *forks;
 int *state;
 int *phils;
@@ -30,11 +30,11 @@ void test(int); // used to check state of philsopher and state of each Fork
 void pickUpFork(int); // waits to grab forks for philospher (denotes when philospher is hungry)
 void putDownFork(int); // puts forks back down (denotes when philospher is thinking)
 void* philosopher(void *); // must be a pointer when working with threading
-                     // determines first action of a philospher when thread is created
+                           // determines first action of a philospher when thread is created
 
 int main(int argc, char *argv[]) {
-    numOfPhils = (intptr_t)argv[1];
-    numOfTimesToEat = (intptr_t)argv[2];
+    numOfPhils = atoi(argv[1]);
+    numOfTimesToEat = atoi(argv[2]);
 
     // thread usage
     pthread_t threads[numOfPhils];
@@ -45,13 +45,21 @@ int main(int argc, char *argv[]) {
     phils = malloc(numOfPhils * sizeof(int)); // track if phil is h, e, or t
     eaten = malloc(numOfPhils * sizeof(int)); // tracks how many times a phil has eaten
 
-    // create philosphers and give them a state based on numOfPhils
+    // set state
     for (int i=0; i<numOfPhils; i++){
-        // set state
         sem_init(&forks[i], 0, 1);
         state[i] = 0;
         phils[i] = rand()%2;
         eaten[i] = 0;
+
+        switch (phils[i]) {
+            case HUNGRY:
+                printf("Philosopher %d is hungry...\n", i);
+                break;
+            case THINKING:
+                printf("Philosopher %d is thinking...\n", i);
+                break;
+        }
     }
 
     // create threads
@@ -71,49 +79,42 @@ int main(int argc, char *argv[]) {
 }
 
 void test(int phil){
-    int forkL, forkR;
+    int forkL, forkR, philNext;
     sem_getvalue(&forks[phil], &forkL);
-    sem_getvalue(&forks[(phil+1)%numOfPhils], &forkR);
+    sem_getvalue(&forks[philNext], &forkR);
+    philNext = (phil+1)%numOfPhils;
 
     if (phils[phil]==HUNGRY && forkL==1 && forkR==1){ // if hungry and both forks are available
-        state[phil] = 1; // get ready to eat
 
-        if (state[(phil+1)%numOfPhils] == 1){ // if the phil to the right is also ready
-            if (eaten[phil] < eaten[(phil+1)%numOfPhils]){ // and you've eaten less
-                state[(phil+1)%numOfPhils] = 0; // you eat first
+        if (state[philNext] == 1){ // if the next phil is ready
+            if (eaten[phil] <= eaten[philNext]){ // and you've eaten as much or less
+                state[philNext] = 0; // they wait
+                state[phil] = 1; // and you eat first
             } else { // but otherwise
                 state[phil] = 0; // let them go first
             }
+        } else {
+            state[phil] = 1;
         }
-
     } else {
         state[phil] = 0;
     }
 }
 
 void pickUpFork(int phil){
+    printf("Philosopher %d is eating...\n", phil);
     sem_wait(&forks[phil]);
     sem_wait(&forks[(phil+1)%numOfPhils]);
-    printf("Philosopher %d is eating...\n", phil);
 }
 
 void putDownFork(int phil){
+    printf("Philosopher %d is thinking...\n", phil);
     sem_post(&forks[phil]);
     sem_post(&forks[(phil+1)%numOfPhils]);
-    printf("Philosopher %d is thinking...\n", phil);
 }
 
 void *philosopher(void *phil){
     int i = (intptr_t)phil;
-
-    switch (phils[i]) {
-        case HUNGRY:
-            printf("Philosopher %d is hungry...\n", i);
-            break;
-        case THINKING:
-            printf("Philosopher %d is thinking...\n", i);
-            break;
-    }
 
     while (eaten[i] < numOfTimesToEat){ // until phil has eaten enough
         switch (phils[i]) {
@@ -122,16 +123,17 @@ void *philosopher(void *phil){
                 if (state[i] == 1){ // if so, start eating
                     pickUpFork(i);
                     phils[i] == EATING;
+
+                    sleep(PERIOD); // eat some
+                    putDownFork(i);
+                    phils[i] = THINKING;
+                    eaten[i] += 1;
+
                 }
-                break;
-            case EATING:
-                eaten[i] += 1;
-                sleep(PERIOD); // eat some
-                putDownFork(i);
-                phils[i] = THINKING;
                 break;
             case THINKING:
                 sleep(PERIOD); // think some
+                printf("Philosopher %d is hungry...\n", i);
                 phils[i] = HUNGRY;
                 break;
         }
