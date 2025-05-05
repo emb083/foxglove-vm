@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <pthread.h>
 #include <semaphore.h>
 #include <unistd.h>
@@ -32,8 +33,8 @@ void* philosopher(void *); // must be a pointer when working with threading
                      // determines first action of a philospher when thread is created
 
 int main(int argc, char *argv[]) {
-    numOfPhils = argv[1];
-    numOfTimesToEat = argv[2];
+    numOfPhils = (intptr_t)argv[1];
+    numOfTimesToEat = (intptr_t)argv[2];
 
     // thread usage
     pthread_t threads[numOfPhils];
@@ -55,7 +56,7 @@ int main(int argc, char *argv[]) {
 
     // create threads
     for (int i=0; i<numOfPhils; i++){
-        pthread_create(&threads[i], NULL, philosopher, i);
+        pthread_create(&threads[i], NULL, philosopher, (void *)(intptr_t)i);
     }
 
     for (int i=0; i<numOfPhils; i++){
@@ -103,7 +104,7 @@ void putDownFork(int phil){
 }
 
 void *philosopher(void *phil){
-    int i = (int)phil;
+    int i = (intptr_t)phil;
 
     switch (phils[i]) {
         case HUNGRY:
