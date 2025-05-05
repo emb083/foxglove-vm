@@ -45,6 +45,8 @@ int main(int argc, char *argv[]) {
     phils = malloc(numOfPhils * sizeof(int)); // track if phil is h, e, or t
     eaten = malloc(numOfPhils * sizeof(int)); // tracks how many times a phil has eaten
 
+    srand(time(NULL)); // make rand function actually random
+
     // set state
     for (int i=0; i<numOfPhils; i++){
         sem_init(&forks[i], 0, 1);
